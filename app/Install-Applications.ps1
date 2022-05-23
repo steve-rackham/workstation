@@ -22,3 +22,5 @@ foreach ($item in $Collection) {
 } # END foreach ($item in $UWP)
 
 Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ] Completed. Processed [ $Counter of $CounterTotal ] with [ $CounterErrrors ]"
+
+
