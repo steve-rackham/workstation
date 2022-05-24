@@ -1,0 +1,51 @@
+add_newline = true
+continuation_prompt = "▶▶"
+
+# Change the default prompt format
+format = """\
+[╭──](8) $time[](8)$all[╰─](8)\
+$character"""
+
+[character]
+success_symbol = "[▶](bold cyan)"
+error_symbol = "[▶](bold red)"
+
+
+
+[time]
+time_format = "%R"
+format = "[$time]($style) "
+style = "dimmed white"
+disabled = false
+
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+home_symbol = "~"
+format = "[ $path]($style)[](bg:black fg:8) "
+style = "fg:bold cyan bg:8"
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "bold cyan"
+
+[git_status]
+format = '[$all_status$ahead_behind]($style) '
+style = "cyan"
+conflicted = "[ﲅ ](red)"
+up_to_date = "[ ](bright-green)"
+untracked = "[ ](bright-yellow)"
+ahead = "[ ](bright-green)"
+diverged = "[  ](bright-yellow) "
+behind = "[ ](dimmed yellow)"
+stashed = "[ ](green)"
+modified = "[ ](yellow)"
+staged = '[ ](green)'
+deleted = "[ﮁ ](red)"
+
+[terraform]
+format = "[ $workspace]($style) "
+style = "bold fg:purple"
+
+

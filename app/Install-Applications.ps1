@@ -4,7 +4,6 @@
 $Collection = @(
     "7zip"
     "vscode"
-    "pshazz"
     "pwsh"
     "curl"
     "sudo"
