@@ -1,0 +1,9 @@
+[user]
+	name = Steve Rackham
+	email = steve@siliconwolf.net
+[core]
+	editor = code --wait
+[fetch]
+	prune = true
+[init]
+	defaultBranch = main

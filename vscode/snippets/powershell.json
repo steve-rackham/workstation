@@ -1,0 +1,125 @@
+{
+	// Place your snippets for powershell here. Each snippet is defined under a snippet name and has a prefix, body and
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"Definitions": {
+		"prefix": "definitions",
+		"body": [
+			"# Definitions: ################################################################",
+			"# Collection: -----------------------------------------------------------------",
+			"$${1:Collection} = @()",
+			"",
+			"# Counters: -------------------------------------------------------------------",
+			"[int]$$Counter = 0",
+			"[int]$$CounterTotal = $${2:Collection}.Count",
+			"[int]$$CounterErrors = 0"
+		],
+		"description": "Definitions"
+	},
+	"Progress Output": {
+		"prefix": "progress",
+		"body": [
+			"# STATUS :---------------------------------------------------------",
+			"$$Counter++",
+			"",
+			"# Write-Progress Operation.",
+			"$WriteProgressParams = @{",
+			"    Activity         = \"${1:Action}...\"",
+			"    Status           = \"Progress: $$Counter of $$CounterTotal\"",
+			"    CurrentOperation = \"Processing: ${2:$$item}\"",
+			"    PercentComplete  = (($$Counter / $$CounterTotal) * 100)",
+			"",
+			"} # END $WriteProgressParams",
+			"",
+			"Write-Progress @WriteProgressParams",
+			"",
+			"$3"
+		],
+		"description": "Status Output"
+	},
+	"Verbose Logging": {
+		"prefix": "verbose",
+		"body": [
+			"Write-Verbose (\"{0} , {1} , {2, $$Offset} , {3}\" -f \"$($Status.Info)\", \"[ $(Get-Date -Format \"yyyy-M-d HH:mm:ss.fff (z)\") ]\", \"TARGET: [ ${1:$$item} ]\", \"${2:Action}: [ ${3:$$Variable} ]...\"  )",
+			"$4"
+		],
+		"description": "Verbose Logging"
+	},
+	"Warning Logging": {
+		"prefix": "warning",
+		"body": [
+			"Write-Warning (\"{0} , {1} , {2, $$Offset} , {3}\" -f \"$($Status.Warning)\", \"[ $(Get-Date -Format \"yyyy-M-d HH:mm:ss.fff (z)\") ]\", \"TARGET: [ ${1:$$item} ]\", \"LINE: $($Error[0].InvocationInfo.ScriptLineNumber) CHAR: $($Error[0].InvocationInfo.OffsetInLine) MESSAGE: $($Error[0].Exception.Message)\" )",
+			"$$CounterErrors++",
+			"$4",
+		],
+		"description": "Warning Logging"
+	},
+	"try-catch": {
+		"prefix": "trycatch",
+		"body": [
+			"try {",
+			"    Write-InfoLog \"[ {item} ]...\" -PropertyValues $$item ",
+			"    ",
+			"}",
+			"catch {",
+			"    Write-ErrorLog \"Error processing [ $$item ]\" -ErrorRecord $$_",
+			"    ",
+			"} # END try/catch",
+			""
+		],
+		"description": "try-catch"
+	},
+	"logger": {
+		"prefix": "logger",
+		"body": [
+			"# Logging: ####################################################################",
+			"# Modules: --------------------------------------------------------------------",
+			"if (Get-Module -ListAvailable -Name PoshLog, PoshLog.Enrichers) {",
+			"    Import-Module PoshLog",
+			"    Import-Module PoShLog.Enrichers",
+			"} else {",
+			"    Install-Module PoshLog",
+			"    Install PoShLog.Enrichers",
+			"    Import-Module PoShLog.Enrichers",
+			"    Import-Module PoshLog",
+			"",
+			"} # END if (Get-Module -ListAvailable -Name PoshLog) ",
+			"",
+			"# Log Params: ------------------------------------------------------------------",
+			"$$LogPath        = \"C:\\Temp\\\"",
+			"$$LogFilename    = \"Log-$(Get-Date -Format 'yyyy-MM-dTHH-mm-ss').log\"",
+			"$$Log            = [System.IO.Path]::Combine($$LogPath, $$LogFilename )",
+			"",
+			"# Logger: ----------------------------------------------------------------------",
+			"$$Logger = New-Logger |",
+			"Add-EnrichWithProperty -Name UserName -Value $($$env:USERNAME).ToLower() |",
+			"   Add-EnrichWithEnvironment -UserName -MachineName | ",
+			"	Add-EnrichWithProcessId | Add-EnrichWithProcessName | ",
+			"	Add-EnrichWithExceptionDetails |",
+			"	Add-SinkFile -Path $$Log -OutputTemplate '[ {Level:u3} ] [ {UserName}@{MachineName} ] [ PID: {ProcessName}:{ProcessId} ] [ {Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} ] {Message:lj}{NewLine}{Exception}' |",
+			"	Add-SinkConsole -OutputTemplate \"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}\" | ",
+			"	Start-Logger -PassThru",
+			"",
+			"",
+			"Write-InfoLog -Logger $$Logger \"Log File location: {log}\" -PropertyValues $$Log"
+		],
+		"description": "logger"
+	},
+	"Log-TimeStamp": {
+		"prefix": "timestamp",
+		"body": [
+			"[ $(Get-Date -Format \"yyyy-M-d HH:mm:ss.fff (z)\") ]"
+		],
+		"description": "Log-TimeStamp"
+	}
+}

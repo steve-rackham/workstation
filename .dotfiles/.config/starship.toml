@@ -1,16 +1,15 @@
 add_newline = true
 continuation_prompt = "▶▶"
+command_timeout = "1000"
+scan_timeout = "100"
 
-# Change the default prompt format
 format = """\
-[╭──](8) $time[](8)$all[╰─](8)\
+[╭──](8)🐺 $time[](8)$all[╰─](8)\
 $character"""
 
 [character]
 success_symbol = "[▶](bold cyan)"
 error_symbol = "[▶](bold red)"
-
-
 
 [time]
 time_format = "%R"
@@ -28,17 +27,17 @@ style = "fg:bold cyan bg:8"
 [git_branch]
 symbol = " "
 format = "[$symbol$branch]($style) "
-style = "bold cyan"
+style = "cyan"
 
 [git_status]
-format = '[$all_status$ahead_behind]($style) '
+format = '[$all_status]($style) '
 style = "cyan"
 conflicted = "[ﲅ ](red)"
-up_to_date = "[ ](bright-green)"
-untracked = "[ ](bright-yellow)"
-ahead = "[ ](bright-green)"
-diverged = "[  ](bright-yellow) "
-behind = "[ ](dimmed yellow)"
+up_to_date = "[ ](green)"
+untracked = "[ ](yellow)"
+ahead = "[ ](green)"
+diverged = "[  ](yellow) "
+behind = "[ ](yellow)"
 stashed = "[ ](green)"
 modified = "[ ](yellow)"
 staged = '[ ](green)'
@@ -47,5 +46,10 @@ deleted = "[ﮁ ](red)"
 [terraform]
 format = "[ $workspace]($style) "
 style = "bold fg:purple"
+
+
+
+
+# Qualm-Nursing-Cassette4"
 
 
