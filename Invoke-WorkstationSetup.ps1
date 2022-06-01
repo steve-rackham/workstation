@@ -1,18 +1,14 @@
 #Requires -RunAsAdministrator
 #Requires -Version 7
 
-function main {
+function Invoke-WorkstationSetup {
     [CmdletBinding()]
     param (
 
         [Parameter()]
-        [switch]$CleanUp,
+        [ValidateSet("Full", "Apps")]
+        [string]$Action
 
-        [Parameter()]
-        [switch]$Apps,
-
-        [Parameter()]
-        [switch]$All
 
     )
 
@@ -32,17 +28,15 @@ function main {
             Write-Warning
             Write-Error
         }
+    }
 
-
+    process {
         # Administrative Action: ##############################################
         Write-Information "[ ADMIN CONFIGURATION ]"
         if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
             Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit
         }
 
-    }
-
-    process {
         # ENVIRONMENT OPTIONS: ################################################
         Write-Information "[ ENVIRONMENT CONFIGURATION ]"
 
@@ -68,28 +62,36 @@ function main {
             Write-Verbose ("{0}{1}" -f $([Char]9), "Multi-Monitor Mode for the Taskbar")
             Set-ItemProperty -Path $RegPath -Name MMTaskbarMode -Value 2 -ErrorAction Stop
 
+            Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
+            Write-Information "Set Service Options..."
+            Write-Verbose ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
+            Set-Service ssh-agent -StartupType Manual
+
+            Write-Information "Disable Unnecessary Services [ $($Script:Service.Count)]..."
+            Services -Name $Script:Service -Verbose
+
+            Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
+            Write-Host -ForegroundColor Cyan "Remove Unnecessary App Packages [ $($script:AppPackage.Count) ]..."
+
+
         } catch {
             Write-Warning
             Write-Error $Error[0].ErrorDetails.Message
         }
 
-        # Install Applications: ###############################################
-
-        Install-ScoopApp -Verbose
-
-
-        # CUSTOMISATION: ######################################################
-
-
-        # WSL: ################################################################
+        switch ($Action) {
+            "Apps" {
+                ScoopApp
+            }
+            Default {
+            }
+        }
 
 
-        Write-Verbose ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
-        Set-Service ssh-agent -StartupType Manual
 
         if ($CleanUp) {
-            Remove-xService -Verbose
-            Remove-xAppPackage -Verbose
+            Services -Verbose
+            AppPackage -Verbose
         }
     }
 }

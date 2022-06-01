@@ -1,68 +1,57 @@
-function AppPackage {
+function WSSetupAppPackage {
     [CmdletBinding()]
     param (
-
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
+        [string[]]$Name
     )
+    process {
+        foreach ($item in $Name) {
+            try {
+                Write-Verbose ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Removing...")
+                [void](Get-AppxPackage $item -AllUsers -ErrorAction Stop | Remove-AppxPackage -ErrorAction Stop)
+                [void](Get-AppxProvisionedPackage -Online -ErrorAction Stop  | Where-Object DisplayName -Like $item -ErrorAction Stop | Remove-AppxProvisionedPackage -Online -ErrorAction Stop)
 
-    # Counters: -------------------------------------------------------------------
-    [int]$Counter = 0
-    [int]$CounterTotal = $Collection.Count
-    [int]$CounterErrors = 0
+            } catch {
+                Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Removing... Error.")
+            }
 
-    Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
-    Write-Host -ForegroundColor Cyan "Remove Unnecessary App Packages [ $($Collection.Count) ]..."
-
-    foreach ($item in $script:AppPackage) {
-        try {
-            Write-Host ("{0}{1}" -f $([Char]9), $item)
-            [void](Get-AppxPackage $item -AllUsers -ErrorAction Stop | Remove-AppxPackage -ErrorAction Stop)
-            [void](Get-AppxProvisionedPackage -Online -ErrorAction Stop  | Where-Object DisplayName -Like $item -ErrorAction Stop | Remove-AppxProvisionedPackage -Online -ErrorAction Stop)
-
-        } catch {
-            $CounterErrors++
-            { 1:<#Do this if a terminating exception happens#> }
-        }
-
-    } # END foreach ($item in $UWP)
-    Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ] Completed. Processed [ $Counter of $CounterTotal ] with [ $CounterErrrors ]"
+        } # END foreach ($item in $UWP)
+    }
 
 }
 
-function Services {
+function WSSetupServices {
     [CmdletBinding()]
     param (
-
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
+        [string[]]$Name
     )
 
-    try {
-        Write-Information "Disable Unnecessary Services [ $($Services.Count)]..."
-
-        foreach ($item in $script:Services) {
+    Process {
+        foreach ($item in $Name ) {
             try {
-                Write-Verbose ("{0}{1}" -f $([Char]9), $item)
+                Write-Verbose ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Disabling Service...")
                 Get-Service -Name $item -ErrorAction Stop | Set-Service -Status Stopped -StartupType Disabled -ErrorAction Stop
 
             } catch {
-                $CounterErrors++
-                { 1:<#Do this if a terminating exception happens#> }
+                Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Disabling Service...Error.")
             }
 
         }
-
-        Write-Information "[ CONFIGURE ENVIRONMENT ] Completed. Processed [ $Counter of $CounterTotal ] with [ $CounterErrrors ]"
-
-    } catch {
-        Write-Warning
-        Write-Error
     }
+
 }
 
-function ScoopApp {
-    [CmdletBinding()]
+function WSSetupScoop {
     param (
 
     )
-
     # Scoop Installation: ---------------------------------------------------------
     Write-Host -ForegroundColor Green "[ SCOOP ]"
     Write-Host -ForegroundColor Cyan "Scoop Installation..."
@@ -111,11 +100,21 @@ function ScoopApp {
         }
 
     }
+}
 
-    Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ]"
-    Write-Host -ForegroundColor Cyan "Installing Applications [ $($Collection.Count) ]..."
 
-    foreach ($item in $Collection) {
+function WSSetupApp {
+    [CmdletBinding()]
+    param (
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )][string[]]$Name
+    )
+
+
+
+    foreach ($item in $Name) {
         Write-Host ("{0}{1}" -f $([Char]9), $item)
         if (-not(scoop info $item)) {
             scoop install $item
@@ -124,12 +123,9 @@ function ScoopApp {
         }
     } # END foreach ($item in $UWP)
 
-    Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ] Completed. Processed [ $Counter of $CounterTotal ] with [ $CounterErrrors ]"
-
-
 }
 
-function Settings {
+function WSSetupSettings {
     [CmdletBinding()]
     param (
     )
@@ -199,14 +195,16 @@ function Settings {
     }
 }
 
-function PowerShellModule {
+function WSSetupPowerShellModule {
     param (
-
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )][string[]]$Name
     )
 
-    Write-Host -ForegroundColor Cyan "Install PowerShell Modules [ $($script:PowerShellModule.Count) ]..."
 
-    foreach ($item in $script:PowerShellModule) {
+    foreach ($item in $Name) {
         Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Required Version [ $($item.Version) ]...")
         $Result = [void](Get-InstalledModule -Name $item.Name -AllowPrerelease -ErrorAction Stop)
 

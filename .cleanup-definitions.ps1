@@ -1,5 +1,5 @@
 # Services: ###################################################################
-$script:Services = @(
+$script:Service = @(
     "diagnosticshub.standardcollector.service" # Diagnostics Hub Service
     "DiagTrack"                                # Diagnostics Tracking Service
     "dmwappushservice"                         # WAP Push Message Routing Service
