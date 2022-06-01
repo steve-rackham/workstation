@@ -1,59 +1,3 @@
-# CUSTOMISATION: ##############################################################
-# Definitions: ################################################################
-$GitName = ""
-$GitEmail = ""
-
-$PowerShellModule = @(
-    "Az"
-    "AzureADPreview"
-    "ComputerManagementDsc"
-    "Graphical"
-    "GuestConfiguration"
-    "Micrsoft.PowerShell.SecretManagement"
-    "MSOnline"
-    "Pester"
-    "Posh-Git"
-    "PoShLog"
-    "PoShLog.Enrichers"
-    "PoShLog.Sinks.Eventlog"
-    "PoShLog.Sinks.Syslog"
-    "PSDesiredStateConfiguration"
-    "PSDscResources"
-    "PSReadline"
-    "PSRemotely"
-    "Terminal-Icons"
-
-)
-
-$VSCodeExtension = @(
-    "aprilandjan.ascii-tree-generator"
-    "DotJoshJohnson.xml"
-    "eamodio.gitlens"
-    "esbenp.prettier-vscode"
-    "golang.go"
-    "hashicorp.terraform"
-    "hediet.vscode-drawio"
-    "ms-azuretools.vscode-azureterraform"
-    "ms-vscode-remote.remote-wsl"
-    "ms-vscode.azure-account"
-    "ms-vscode.powershell-preview"
-    "PKief.material-product-icons"
-    "redhat.vscode-yaml"
-    "robole.markdown-snippets"
-    "robole.marky-dynamic"
-    "robole.marky-edit"
-    "robole.marky-markdown"
-    "robole.marky-stats"
-    "streetsidesoftware.code-spell-checker"
-    "vscode-icons-team.vscode-icons"
-    "yzhang.markdown-all-in-one"
-)
-
-$PowerShellProfile = @"
-
-
-"@
-
 # Counters: -------------------------------------------------------------------
 [int]$Counter = 0
 [int]$CounterTotal = $Collection.Count
@@ -105,12 +49,15 @@ Write-Host -ForegroundColor Cyan "Customise Terminal Config..."
 Write-Host -ForegroundColor Cyan "Install PowerShell Modules [ $(PowerShellModule.Count) ]..."
 
 foreach ($item in $PowerShellModule) {
-    Write-Host ("{0}{1}" -f $([Char]9), $item)
-    $Result = (Get-Module -ListAvailable -Name $item) ? ("Installed") : ("Not Installed")
+    Write-Verbose ("{0}{1}{2}" -f $([Char]9), $item, "...")
+    $Result = (Get-InstalledModule -Name $item.Name -AllowPrerelease -ErrorAction Stop)
 
     switch ($Result) {
-        "Installed" {
-            Write-Host ("{0}{1, {2}}" -f $([Char]9), $item, "Installed. Checking for updates...")
+       ( [version]$Result.Version -lt $item.Version) {
+
+
+
+            Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item, "Installed. Checking for updates...")
             Update-Module $item -Confirm:$false -Force
         }
         "Not Installed" {

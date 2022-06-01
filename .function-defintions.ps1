@@ -1,4 +1,4 @@
-function Remove-xAppPackage {
+function AppPackage {
     [CmdletBinding()]
     param (
 
@@ -28,8 +28,7 @@ function Remove-xAppPackage {
 
 }
 
-# Services: -------------------------------------------------------
-function Remove-xService {
+function Services {
     [CmdletBinding()]
     param (
 
@@ -58,9 +57,7 @@ function Remove-xService {
     }
 }
 
-
-
-function Install-ScoopApp {
+function ScoopApp {
     [CmdletBinding()]
     param (
 
@@ -120,8 +117,11 @@ function Install-ScoopApp {
 
     foreach ($item in $Collection) {
         Write-Host ("{0}{1}" -f $([Char]9), $item)
-        scoop install $item
-
+        if (-not(scoop info $item)) {
+            scoop install $item
+        } else {
+            Write-Host ("{0}{1} {2}" -f $([Char]9), $item, "Installed")
+        }
     } # END foreach ($item in $UWP)
 
     Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ] Completed. Processed [ $Counter of $CounterTotal ] with [ $CounterErrrors ]"
@@ -129,3 +129,99 @@ function Install-ScoopApp {
 
 }
 
+function Settings {
+    [CmdletBinding()]
+    param (
+    )
+    $settings = @(
+        @{
+            Name = 'VSCode Settings'
+            URI  = $script:vsCodeSettingsJSON
+            File = -join ($script:vscodeSettingsPath, '\settings.json')
+        }
+        @{
+            Name = 'VSCode PowerShell Snippets'
+            URI  = $script:vsCodePowerShellSnippetsJSON
+            File = -join ($script:vscodeSnippetsPath, '\powershell.json')
+        }
+        @{
+            Name = 'Windows Terminal Settings'
+            URI  = $script:windowsTerminalSettingsJSON
+            File = -join ($script:windowsTerminalSettingsPath, '\settings.json')
+        }
+        @{
+            Name = 'PowerShell profile'
+            URI  = $script:psProfile
+            File = -join ($script:profilePath, '\profile.ps1')
+        }
+    )
+
+    foreach ($setting in $settings) {
+        Start-Sleep -Milliseconds 500
+        Write-Verbose -Message ('Downloading {0} to {1}' -f $setting.Name, $setting.File)
+
+        $gistUrl = $null
+        $fileName = $null
+        $gistContent = $null
+        $gistUrl = $setting.URI
+        $fileName = Split-Path $setting.File -Leaf
+
+        try {
+            $invokeSplat = @{
+                Uri         = $gistUrl
+                ErrorAction = 'Stop'
+            }
+
+            $gist = Invoke-RestMethod @invokeSplat
+            $gistContent = $gist.Files.$fileName.Content
+            Write-Verbose -Message '    Download COMPLETED.'
+        } catch {
+            Write-Error $_
+            continue
+        }
+
+        try {
+            Write-Verbose -Message '    Writing out content...'
+            $setContentSplat = @{
+                # Path        = "$path\$fileName"
+                Path        = $setting.File
+                Value       = $gistContent
+                Confirm     = $false
+                Force       = $true
+                ErrorAction = 'Stop'
+            }
+            Set-Content @setContentSplat
+            Write-Verbose -Message '    Setting applied!'
+        } catch {
+            Write-Error $_
+            continue
+        }
+    }
+}
+
+function PowerShellModule {
+    param (
+
+    )
+
+    Write-Host -ForegroundColor Cyan "Install PowerShell Modules [ $($script:PowerShellModule.Count) ]..."
+
+    foreach ($item in $script:PowerShellModule) {
+        Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Required Version [ $($item.Version) ]...")
+        $Result = [void](Get-InstalledModule -Name $item.Name -AllowPrerelease -ErrorAction Stop)
+
+        switch ($Result) {
+            ([version]$Result.Version -lt [version]$item.Version) {
+                Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Current Version [ $($Result.Version) ]. Updating...")
+                Update-Module $item -Confirm:$false -Force
+
+            }
+
+            Default {
+                Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Required Version [ $($item.Version) ]. Installing...")
+                Install-Module $item.Name -RequiredVersion $item.Version -Scope CurrentUser -Confirm:$false -ErrorAction Stop
+
+            }
+        }
+    }
+}
