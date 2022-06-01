@@ -62,17 +62,17 @@ function Invoke-WorkstationSetup {
             Write-Verbose ("{0}{1}" -f $([Char]9), "Multi-Monitor Mode for the Taskbar")
             Set-ItemProperty -Path $RegPath -Name MMTaskbarMode -Value 2 -ErrorAction Stop
 
-            Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
+            Write-Host -ForegroundColor Cyan "[ SERVICE CONFIGURATION ]"
             Write-Information "Set Service Options..."
             Write-Verbose ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
             Set-Service ssh-agent -StartupType Manual
 
             Write-Information "Disable Unnecessary Services [ $($Script:Service.Count)]..."
-            Services -Name $Script:Service -Verbose
+            $Script:Service | WSSetupService -Verbose
 
             Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
             Write-Host -ForegroundColor Cyan "Remove Unnecessary App Packages [ $($script:AppPackage.Count) ]..."
-
+            $script:AppPackage | WSSetupAppPackage -Verbose
 
         } catch {
             Write-Warning
@@ -81,18 +81,20 @@ function Invoke-WorkstationSetup {
 
         switch ($Action) {
             "Apps" {
-                ScoopApp
+                # Scoop Installation: ---------------------------------------------------------
+                Write-Host -ForegroundColor Green "[ SCOOP ]"
+                Write-Host -ForegroundColor Cyan "Scoop Installation..."
+
+                Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ]"
+                Write-Host -ForegroundColor Cyan "Installing Applications [ $($script:Application.Count) ]..."
+                $script:Application | WSSetupApp -Verbose
             }
             Default {
             }
         }
 
+        Write-Host -ForegroundColor Cyan "Install PowerShell Modules [ $($script:PowerShellModule.Count) ]..."
 
-
-        if ($CleanUp) {
-            Services -Verbose
-            AppPackage -Verbose
-        }
     }
 }
 

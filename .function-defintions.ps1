@@ -42,25 +42,21 @@ function WSSetupServices {
             } catch {
                 Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Disabling Service...Error.")
             }
-
         }
     }
-
 }
 
 function WSSetupScoop {
     param (
 
     )
-    # Scoop Installation: ---------------------------------------------------------
-    Write-Host -ForegroundColor Green "[ SCOOP ]"
-    Write-Host -ForegroundColor Cyan "Scoop Installation..."
+
 
     $Result = (Get-Command scoop) ? ("Installed") : ($null)
 
     switch ($Result) {
         "Installed" {
-            Write-Host ("{0}{1}" -f $([Char]9), "Scoop Installed. Updating...")
+            Write-Verbose ("{0}{1} {2}" -f $([Char]9), "[ Scoop ]", "Disabling Service...")
             scoop update
         }
         $null {
