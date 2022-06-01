@@ -36,7 +36,7 @@ function WSSetupServices {
     Process {
         foreach ($item in $Name ) {
             try {
-                Write-Verbose ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Disabling Service...")
+                Write-Host -ForegroundColor Cyan ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Disabling Service...")
                 Get-Service -Name $item -ErrorAction Stop | Set-Service -Status Stopped -StartupType Disabled -ErrorAction Stop
 
             } catch {
@@ -108,16 +108,18 @@ function WSSetupApp {
         )][string[]]$Name
     )
 
+    process {
+        foreach ($item in $Name) {
+            Write-Host -ForegroundColor Cyan ("{0}{1}" -f $([Char]9), $item) -NoNewline
+            if (-not(scoop info $item)) {
+                Write-Host ("{0}{1}" -f $([Char]9), "Installing...")
+                # scoop install $item
+            } else {
+                Write-Host ("{0}{1}" -f $([Char]9), "Installed")
+            }
+        } # foreach ($item in $Name)
+    }
 
-
-    foreach ($item in $Name) {
-        Write-Host ("{0}{1}" -f $([Char]9), $item)
-        if (-not(scoop info $item)) {
-            scoop install $item
-        } else {
-            Write-Host ("{0}{1} {2}" -f $([Char]9), $item, "Installed")
-        }
-    } # END foreach ($item in $UWP)
 
 }
 
@@ -196,25 +198,33 @@ function WSSetupPowerShellModule {
         [Parameter(
             ValueFromPipeline,
             ValueFromPipelineByPropertyName
-        )][string[]]$Name
+        )][hashtable[]]$Module
     )
 
+    process {
+        foreach ($item in $Module) {
+            Write-Host -ForegroundColor Cyan ("{0}{1} {2}" -f $([Char]9), "[ $($item.ModuleName) ]", "Required Version [ $($item.Version) ]...") -NoNewline
+            $Latest = [void](Find-Module -Name $item.ModuleName)
+            $Result = [void](Get-InstalledModule -Name $item.ModuleName -AllowPrerelease -ErrorAction Stop)
 
-    foreach ($item in $Name) {
-        Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Required Version [ $($item.Version) ]...")
-        $Result = [void](Get-InstalledModule -Name $item.Name -AllowPrerelease -ErrorAction Stop)
+            switch ($Result) {
+                (([version]$Result.Version -lt [version]$Latest.Version) -and ($Module.Version -eq "Latest")) {
+                    Write-Host "Updating to [ $($Latest.Version)]..."
+                    # Update-Module $item -Confirm:$false -Force
 
-        switch ($Result) {
-            ([version]$Result.Version -lt [version]$item.Version) {
-                Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Current Version [ $($Result.Version) ]. Updating...")
-                Update-Module $item -Confirm:$false -Force
+                }
 
-            }
+                (([version]$Result.Version -ne [version]$Latest.Version) -and ($Module.Version -ne "Latest")) {
+                    Write-Host "Current Version [ $($Result.Version) ]. Latest Version [ $($Latest.Version) ]. Installing [ $($Module.Version)]..."
+                    # Update-Module $item -Confirm:$false -Force
 
-            Default {
-                Write-Verbose ("{0}{1} {2}" -f $([Char]9), $item.Name, "Required Version [ $($item.Version) ]. Installing...")
-                Install-Module $item.Name -RequiredVersion $item.Version -Scope CurrentUser -Confirm:$false -ErrorAction Stop
+                }
 
+                Default {
+                    "Installing..."
+                    # Install-Module $item.ModuleName -RequiredVersion $item.Version -Scope CurrentUser -Confirm:$false -ErrorAction Stop
+
+                }
             }
         }
     }

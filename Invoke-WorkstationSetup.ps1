@@ -6,7 +6,7 @@ function Invoke-WorkstationSetup {
     param (
 
         [Parameter()]
-        [ValidateSet("Full", "Apps")]
+        [ValidateSet("Full", "Apps", "Customise")]
         [string]$Action
 
 
@@ -21,7 +21,7 @@ function Invoke-WorkstationSetup {
             Write-Information "[ DEFINITIONS ]"
             . .app-definitions.ps1
             . .custom-definitions.ps1
-            . .env-definitions.ps1
+            . .cleanup-definitions.ps1
             . .function-defintions.ps1
 
         } catch {
@@ -38,7 +38,7 @@ function Invoke-WorkstationSetup {
         }
 
         # ENVIRONMENT OPTIONS: ################################################
-        Write-Information "[ ENVIRONMENT CONFIGURATION ]"
+        Write-Information "[ FILE EXPLORER ]"
 
         # File Explorer Options: ----------------------------------------------
         try {
@@ -62,16 +62,16 @@ function Invoke-WorkstationSetup {
             Write-Verbose ("{0}{1}" -f $([Char]9), "Multi-Monitor Mode for the Taskbar")
             Set-ItemProperty -Path $RegPath -Name MMTaskbarMode -Value 2 -ErrorAction Stop
 
-            Write-Host -ForegroundColor Cyan "[ SERVICE CONFIGURATION ]"
+            Write-Host  "[ SERVICES ]"
             Write-Information "Set Service Options..."
             Write-Verbose ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
             Set-Service ssh-agent -StartupType Manual
 
-            Write-Information "Disable Unnecessary Services [ $($Script:Service.Count)]..."
+            Write-Information "Disable Unnecessary Services..."
             $Script:Service | WSSetupService -Verbose
 
-            Write-Host -ForegroundColor Cyan "[ UWP CONFIGURATION ]"
-            Write-Host -ForegroundColor Cyan "Remove Unnecessary App Packages [ $($script:AppPackage.Count) ]..."
+            Write-Host  "[ APP PACKAGES ]"
+            Write-Host  "Remove Unnecessary App Packages..."
             $script:AppPackage | WSSetupAppPackage -Verbose
 
         } catch {
@@ -81,20 +81,40 @@ function Invoke-WorkstationSetup {
 
         switch ($Action) {
             "Apps" {
-                # Scoop Installation: ---------------------------------------------------------
-                Write-Host -ForegroundColor Green "[ SCOOP ]"
-                Write-Host -ForegroundColor Cyan "Scoop Installation..."
+                # Scoop Installation: -----------------------------------------
+                Write-Host "[ SCOOP ]" -ForegroundColor Green
+                Write-Host  "Scoop Installation..."
+                WSSetupScoop
 
-                Write-Host -ForegroundColor Cyan "[ INSTALL APPLICATIONS ]"
-                Write-Host -ForegroundColor Cyan "Installing Applications [ $($script:Application.Count) ]..."
+                # App Installation: -------------------------------------------
+                Write-Host "[ APPLICATIONS ]"
+                Write-Host  "Installing Applications..."
                 $script:Application | WSSetupApp -Verbose
+
             }
+
+            "Customise" {
+                # Shell: ------------------------------------------------------
+
+
+            }
+
             Default {
+                # Scoop Installation: -----------------------------------------
+                Write-Host -ForegroundColor Green "[ SCOOP ]"
+                Write-Host  "Scoop Installation..."
+                WSSetupScoop -Verbose
+
+                # App Installation: -------------------------------------------
+                Write-Host  "[ APPLICATIONS ]"
+                Write-Host  "Installing Applications..."
+                $Application | WSSetupApp -Verbose
+
+                Write-Host  "[ POWERSHELL ]"
+                Write-Host  "Installing PowerShell Modules..."
+                $script:PowerShellModule | WSSetupPowerShellModule  -Verbose
             }
         }
-
-        Write-Host -ForegroundColor Cyan "Install PowerShell Modules [ $($script:PowerShellModule.Count) ]..."
-
     }
 }
 
