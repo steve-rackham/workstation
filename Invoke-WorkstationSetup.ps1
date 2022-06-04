@@ -6,10 +6,8 @@ function Invoke-WorkstationSetup {
     param (
 
         [Parameter()]
-        [ValidateSet("Full", "Apps", "Customise")]
+        [ValidateSet("Apps", "Customise")]
         [string]$Action
-
-
     )
 
     begin {
@@ -62,64 +60,57 @@ function Invoke-WorkstationSetup {
             Write-Verbose ("{0}{1}" -f $([Char]9), "Multi-Monitor Mode for the Taskbar")
             Set-ItemProperty -Path $RegPath -Name MMTaskbarMode -Value 2 -ErrorAction Stop
 
-            Write-Host  "[ SERVICES ]"
+        } catch {
+            Write-Warning ("{0}{1}" -f $([Char]9), "Error Processing File Explorer Options")
+            Write-Error ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
+        }
+
+        try {
+            Write-Information "[ SERVICES ]"
             Write-Information "Set Service Options..."
             Write-Verbose ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
             Set-Service ssh-agent -StartupType Manual
 
             Write-Information "Disable Unnecessary Services..."
-            $Script:Service | WSSetupService -Verbose
-
-            Write-Host  "[ APP PACKAGES ]"
-            Write-Host  "Remove Unnecessary App Packages..."
-            $script:AppPackage | WSSetupAppPackage -Verbose
-
+            WSSetupService -Name $Service -Verbose
         } catch {
-            Write-Warning
-            Write-Error $Error[0].ErrorDetails.Message
+            Write-Warning ("{0}{1}" -f $([Char]9), "Error Service Options")
+            Write-Error ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
         }
 
-        switch ($Action) {
-            "Apps" {
-                # Scoop Installation: -----------------------------------------
-                Write-Host "[ SCOOP ]" -ForegroundColor Green
-                Write-Host  "Scoop Installation..."
-                WSSetupScoop
-
-                # App Installation: -------------------------------------------
-                Write-Host "[ APPLICATIONS ]"
-                Write-Host  "Installing Applications..."
-                $script:Application | WSSetupApp -Verbose
-
-            }
-
-            "Customise" {
-                # Shell: ------------------------------------------------------
-
-
-            }
-
-            Default {
-                # Scoop Installation: -----------------------------------------
-                Write-Host -ForegroundColor Green "[ SCOOP ]"
-                Write-Host  "Scoop Installation..."
-                WSSetupScoop -Verbose
-
-                # App Installation: -------------------------------------------
-                Write-Host  "[ APPLICATIONS ]"
-                Write-Host  "Installing Applications..."
-                $Application | WSSetupApp -Verbose
-
-                Write-Host  "[ POWERSHELL ]"
-                Write-Host  "Installing PowerShell Modules..."
-                $script:PowerShellModule | WSSetupPowerShellModule  -Verbose
-            }
+        try {
+            Write-Information  "[ APP PACKAGES ]"
+            Write-Information  "Remove Unnecessary App Packages..."
+            WSSetupAppPackage -Name $AppPackage -Verbose
+        } catch {
+            Write-Warning ("{0}{1}" -f $([Char]9), "Error Processing AppPackage Options")
+            Write-Error ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
         }
     }
 }
 
-end {
+switch ($Action) {
+    "Apps" {
+        WSSetupScoop
+        WSSetupApp -Name $Application
+    }
 
+    "Customise" {
+        WSSetupSettings -Customise VSCode, Terminal, PowerShell
+        WSSetupPowerShellModule -Module $PowerShellModule
+        WSSetupVSCodeExtensions -Name $VSCodeExtension
+
+
+    }
+
+    Default {
+        WSSetupScoop
+        WSSetupApp -Name $Application
+        WSSetupSettings -Customise VSCode, Terminal, PowerShell
+        WSSetupPowerShellModule -Module $PowerShellModule
+        WSSetupVSCodeExtensions -Name $VSCodeExtension
+    }
 }
+
 
 

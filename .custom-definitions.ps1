@@ -1,5 +1,14 @@
+# POWERSHELL PROFILE: #########################################################
+$PowerShellProfile = @(
+    @{
+        Name  = "PowerShell Profile"
+        Value = [System.IO.Path]::GetFullPath(".\powershell\profile.ps1")
+        Path  = [System.IO.Path]::join($env:USERPROFILE, "\Documents\PowerShell", "\profile.ps1")
+    }
+)
+
 # POWERSHELL MODULES: #########################################################
-$script:PowerShellModule = @(
+$PowerShellModule = @(
     @{
         ModuleName = "Az"
         Version    = "Latest"
@@ -87,13 +96,39 @@ $script:PowerShellModule = @(
     }
 )
 
+# VSCODE SETTINGS: ############################################################
+$VSCodeSetting = @(
+    @{
+        Name  = "VSCode Settings"
+        Value = [System.IO.Path]::GetFullPath(".\vscode\settings.json")
+        Path  = [System.IO.Path]::join($env:APPDATA, "\Code\User", "\settings.json")
+    }
 
+    @{
+        Name  = "VSCode PowerShell Snippets"
+        Value = [System.IO.Path]::GetFullPath(".\vscode\snippets\powershell.json")
+        Path  = [System.IO.Path]::join($env:APPDATA, "\Code\User\snippets", "\powershell.json")
+    }
 
+)
 
-# POWERSHELL PROFILE: #########################################################
+# WINDOWS TERMINAL SETTINGS: ##################################################
+$WindowsTerminalSetting = @(
+    @{
+        Name  = "Windows Terminal Settings"
+        Value = [System.IO.Path]::GetFullPath(".\windows-terminal\settings.json")
+        Path  = [System.IO.Path]::join($env:LOCALAPPDATA, "\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState", "\settings.json")
+    }
+
+    @{
+        Name  = "Windows Terminal Background"
+        Value = [System.IO.Path]::GetFullPath(".\windows-terminal\background.png")
+        Path  = [System.IO.Path]::join($env:LOCALAPPDATA, "\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState", "\settings.json")
+    }
+)
 
 # VSCODE EXTENSIONS: ##########################################################
-$script:VSCodeExtension = @(
+$VSCodeExtension = @(
     "aprilandjan.ascii-tree-generator"
     "DotJoshJohnson.xml"
     "eamodio.gitlens"
