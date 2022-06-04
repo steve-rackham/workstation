@@ -2,7 +2,7 @@
 $PowerShellProfile = @(
     @{
         Name  = "PowerShell Profile"
-        Value = [System.IO.Path]::GetFullPath(".\powershell\profile.ps1")
+        Value = [System.IO.Path]::GetFullPath(".\profiles\powershell-profile.ps1")
         Path  = [System.IO.Path]::join($env:USERPROFILE, "\Documents\PowerShell", "\profile.ps1")
     }
 )
@@ -100,14 +100,19 @@ $PowerShellModule = @(
 $VSCodeSetting = @(
     @{
         Name  = "VSCode Settings"
-        Value = [System.IO.Path]::GetFullPath(".\vscode\settings.json")
+        Value = [System.IO.Path]::GetFullPath(".\settings\vscode-settings.json")
         Path  = [System.IO.Path]::join($env:APPDATA, "\Code\User", "\settings.json")
     }
 
     @{
         Name  = "VSCode PowerShell Snippets"
-        Value = [System.IO.Path]::GetFullPath(".\vscode\snippets\powershell.json")
+        Value = [System.IO.Path]::GetFullPath(".\setting\vscode-snippets-powershell.json")
         Path  = [System.IO.Path]::join($env:APPDATA, "\Code\User\snippets", "\powershell.json")
+    }
+    @{
+        Name  = "VSCode Markdown Snippets"
+        Value = [System.IO.Path]::GetFullPath(".\setting\vscode-snippets-markdown.json")
+        Path  = [System.IO.Path]::join($env:APPDATA, "\Code\User\snippets", "\markdown.json")
     }
 
 )
@@ -116,15 +121,15 @@ $VSCodeSetting = @(
 $WindowsTerminalSetting = @(
     @{
         Name  = "Windows Terminal Settings"
-        Value = [System.IO.Path]::GetFullPath(".\windows-terminal\settings.json")
+        Value = [System.IO.Path]::GetFullPath(".\settings\windows-terminal-settings.json")
         Path  = [System.IO.Path]::join($env:LOCALAPPDATA, "\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState", "\settings.json")
     }
 
-    @{
-        Name  = "Windows Terminal Background"
-        Value = [System.IO.Path]::GetFullPath(".\windows-terminal\background.png")
-        Path  = [System.IO.Path]::join($env:LOCALAPPDATA, "\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState", "\settings.json")
-    }
+    # @{
+    #     Name  = "Windows Terminal Background"
+    #     Value = [System.IO.Path]::GetFullPath(".\img\wolf.png")
+    #     Path  = [System.IO.Path]::join($env:LOCALAPPDATA, "\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState", "\settings.json")
+    # }
 )
 
 # VSCODE EXTENSIONS: ##########################################################
