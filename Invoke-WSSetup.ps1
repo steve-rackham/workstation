@@ -1,6 +1,6 @@
 function WSSetupCheckFiles {
     param (
-        $Files
+        [string[]]$Files
     )
 
     foreach ($File in $Files) {
@@ -18,8 +18,8 @@ function WSSetupCheckFiles {
             }
         }
     }
-
 }
+
 function Invoke-WSSetup {
     [CmdletBinding()]
     param (
@@ -56,21 +56,7 @@ function Invoke-WSSetup {
     foreach ($Action in $Setup) {
         switch ($Action) {
             Apps {
-                foreach ($File in $AppFiles) {
-                    $Path = [System.IO.Path]::GetFullPath($File)
-
-                    switch ($([System.IO.File]::Exists($Path))) {
-                        $true {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ Loading ]", $File)
-                            . $File
-                        }
-                        $false {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ ERROR ]", $File)
-                            Write-Output ("{0}{1}" -f $([Char]9), "Exit.")
-                            Exit
-                        }
-                    }
-                }
+                WSSetupCheckFiles -Files $AppFiles
 
                 WSSetupScoop
                 WSSetupApp -Name $Application
@@ -78,22 +64,7 @@ function Invoke-WSSetup {
                 break
             }
             Customise {
-                foreach ($File in $CustomiseFiles) {
-                    $Path = [System.IO.Path]::GetFullPath($File)
-
-                    switch ($([System.IO.File]::Exists($Path))) {
-                        $true {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ Loading ]", $File)
-                            . $File
-
-                        }
-                        $false {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ ERROR ]", $File)
-                            Write-Output ("{0}{1}" -f $([Char]9), "Exit.")
-                            Exit
-                        }
-                    }
-                }
+                WSSetupCheckFiles -Files $CustomiseFiles
 
                 WSSetupSettings -Customise VSCode, Terminal, PowerShell
                 WSSetupPowerShellModule -Module $PowerShellModule
@@ -103,22 +74,7 @@ function Invoke-WSSetup {
 
             }
             DotFiles {
-                foreach ($File in $DotFiles) {
-                    $Path = [System.IO.Path]::GetFullPath($File)
-
-                    switch ($([System.IO.File]::Exists($Path))) {
-                        $true {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ Loading ]", $File)
-                            . .\dotfiles\dotfiles-defintitions.ps1
-                            . .\functions\dotfiles-functions.ps1
-                        }
-                        $false {
-                            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ ERROR ]", $File)
-                            Write-Output ("{0}{1}" -f $([Char]9), "Exit.")
-                            Exit
-                        }
-                    }
-                }
+                # WSSetupCheckFiles -Files $DotFiles
 
                 WSSetupDotFiles
                 break

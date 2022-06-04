@@ -7,6 +7,7 @@ $script:Bucket = @(
     "nirsoft"
     "sysinternals"
     "versions"
+    "hoilc_scoop-lemon https://github.com/hoilc/scoop-lemon" # infracost
 )
 
 # Applications: ###############################################################

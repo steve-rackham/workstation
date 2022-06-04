@@ -18,7 +18,6 @@ function WSSetupSettings {
             VSCode {
                 $Setting = @(
                     $VSCodeSetting
-                    #$VSCodeExtension
                 )
                 break
 
@@ -33,7 +32,6 @@ function WSSetupSettings {
             PowerShell {
                 $Setting = @(
                     $PowerShellProfile
-                    # $PowerShellModule
 
                 )
                 break
@@ -41,9 +39,7 @@ function WSSetupSettings {
             Default {
                 $Setting = @(
                     $VSCodeSetting
-                    #$VSCodeExtension
                     $PowerShellProfile
-                    #$PowerShellModule
                     $WindowsTerminalSetting
 
                 )
