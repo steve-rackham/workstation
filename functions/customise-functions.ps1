@@ -58,14 +58,13 @@ function WSSetupSettings {
                 ErrorAction = "Stop"
             }
             Write-Output ("{0}{1}" -f $([Char]9), "[ $($item.Name) ]")
+            Set-Content @ContentParams -WhatIf
             Write-Output ("{0}{1}{2}" -f $([Char]9), $([Char]9), "$($item.Path)...")
-            # Set-Content @ContentParams -WhatIf
 
         } catch {
-            Write-Error $_
+            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ $($item.Name) ]", "ERROR!")
             continue
         }
-
     }
 }
 
