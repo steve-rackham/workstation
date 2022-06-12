@@ -1,5 +1,38 @@
 
 
+function WSSetupAdmin {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [ValidateSet("SetExplorerOptions", "SetServiceOptions", "RemoveAppPackages")]
+        [string]$Setup
+    )
+
+    foreach ($Action in $Setup) {
+        switch ($Action) {
+            SetExplorerOptions {
+                WSSetupExplorerOptions
+                break
+            }
+            SetServiceOptions {
+                WSSetupService -Name $Service
+                break
+
+            }
+            RemoveAppPackages {
+                WSSetupAppPackage -Name $AppPackage
+                break
+
+            }
+            Default {
+                Write-Output ("{0}{1} {2}" -f $([Char]9), "[ ERROR ]", $Action)
+                Write-Output ("{0}{1}" -f $([Char]9), "Exit.")
+
+            }
+        }
+    }
+}
+
 function WSSetupExplorerOptions {
     param (
 

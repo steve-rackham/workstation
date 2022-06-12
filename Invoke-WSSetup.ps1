@@ -41,6 +41,11 @@ function Invoke-WSSetup {
         ".\functions\dotfiles-functions.ps1"
     )
 
+    $AdminFiles = @(
+        ".\definitions\admin-definitions.ps1"
+        ".\functions\admin-functions.ps1"
+    )
+
     foreach ($Action in $Setup) {
         switch ($Action) {
             Apps {
@@ -66,9 +71,13 @@ function Invoke-WSSetup {
 
             }
             Admin {
-                # Self-elevate the script if required
-                if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+                # Definitions: ########################################################
+                # Load Helper Functions and Files: ------------------------------------
+                Write-Output "[ DEFINITIONS ]"
+                Write-Output "Loading Helper Functions and Definitions..."
 
+
+                if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
                     $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
                     Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
                     Exit
