@@ -1,8 +1,11 @@
-# SHELL CUSTOMISATION: --------------------------------------------------------
-# COMMON MODULES: -------------------------------------------------------------
+# SHELL CUSTOMISATION: ########################################################
+# DEFINITIONS: ################################################################
+$Date = Get-Date
+
+# COMMON MODULES: #############################################################
 Import-Module -Name Terminal-Icons
 
-# HELPER FUNCTIONS: -----------------------------------------------------------
+# HELPER FUNCTIONS: ###########################################################
 function Test-RunAsAdministrator {
     $Principal = [Security.Principal.WindowsPrincipal] ([Security.Principal.WindowsIdentity]::GetCurrent())
     if ($Principal.IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -18,54 +21,63 @@ function Get-TypeAccelerators {
     [psobject].Assembly.GetType("System.Management.Automation.TypeAccelerators")::get
 }
 
-# SET-LOCATION:----------------------------------------------------------------
+# GIT: ########################################################################
+# Set-Location: ---------------------------------------------------------------
 $Params = @{
     Name        = "git"
     PSProvider  = "FileSystem"
-    Root        = "C:\Users\wolf\OneDrive - siliconwolf\git"
+    Root        = "C:\Users\$env:USERNAME\OneDrive - siliconwolf\git"
     Description = "Git Folder"
 }
 
 [void](New-PSDrive @Params)
+
 Set-Location git:
-$date = Get-Date
-$uptime = Get-Uptime
+
+# BANNER: #####################################################################
 
 $Coffee = @"
 ─▄▀─▄▀
 ──▀──▀
-█▀▀▀▀▀█▄
-█░░░░░█─█ 🅸🅽🆂🅴🆁🆃 ☕ 🅸🅽🅸🆃 🧠
-▀▄▄▄▄▄▀▀
+█▀▀▀▀▀█▄  🅸🅽🆂🅴🆁🆃
+█░░░░░█─█ ☕☕☕
+▀▄▄▄▄▄▀▀  🅸🅽🅸🆃🧠
+
 "@
 
 $Beer = @"
-█▄▀▄▀▄█
-█░▀░▀░█▄    🅸🅽🆂🅴🆁🆃 🍺 🅸🅳🅻🅴 🧠
+█▄▀▄▀▄█     🅸🅽🆂🅴🆁🆃
+█░▀░▀░█▄    🍺🍺🍺
 █░▀░░░█─█
-█░░░▀░█▄▀
-▀▀▀▀▀▀▀
+█░░░▀░█▄▀   🆄🅽🆆🅸🅽🅳
+▀▀▀▀▀▀▀     🧠🧠🧠
 
 "@
+$Date = Get-Date
 
+switch ($Date.DayOfWeek) {
+    "Friday" {
+        if ($Date.TimeOfDay.hours -lt 17) {
+            Write-Host $Coffee -ForegroundColor Cyan
+        }
 
-$MOTD
-
-
-# Write-Host $MOTD -foregroundcolor cyan
-$date = Get-Date
-switch (($date.TimeOfDay.hours -lt 17)) {
-    $true {
-        Write-Host $Coffee -ForegroundColor cyan
+    }
+    "Saturday" {
+        Write-Host $Coffee -ForegroundColor Cyan
+    }
+    "Sunday" {
+        Write-Host $Coffee -ForegroundColor Cyan
     }
     Default {
-        Write-Host $Beer  -ForegroundColor cyan
+        Write-Host $Beer  -ForegroundColor Cyan
     }
 }
+
+
 Invoke-Expression (&starship init powershell)
 
 #region conda initialize
 # !! Contents within this block are managed by 'conda init' !!
-(& "C:\Users\wolf\scoop\apps\miniconda3\current\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+(& "C:\Users\$env:USERNAME\scoop\apps\miniconda3\current\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
 #endregion
 
