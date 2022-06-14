@@ -25,7 +25,7 @@ function Get-TypeAccelerators {
 # Set-Location: ---------------------------------------------------------------
 switch ($env:COMPUTERNAME) {
     "WOLF-PC" {
-        $OneDrive = "siliconwolf" 
+        $OneDrive = "siliconwolf"
     }
     Default {
         $OneDrive = "Computer Concepts Limited"
