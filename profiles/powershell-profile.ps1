@@ -23,10 +23,18 @@ function Get-TypeAccelerators {
 
 # GIT: ########################################################################
 # Set-Location: ---------------------------------------------------------------
+switch ($env:COMPUTERNAME) {
+    "WOLF-PC" {
+        $OneDrive = "siliconwolf" 
+    }
+    Default {
+        $OneDrive = "Computer Concepts Limited"
+    }
+}
 $Params = @{
     Name        = "git"
     PSProvider  = "FileSystem"
-    Root        = "C:\Users\$env:USERNAME\OneDrive - siliconwolf\git"
+    Root        = "C:\Users\$env:USERNAME\OneDrive - $OneDrive\git"
     Description = "Git Folder"
 }
 
@@ -39,45 +47,46 @@ Set-Location git:
 $Coffee = @"
 ─▄▀─▄▀
 ──▀──▀
-█▀▀▀▀▀█▄  🅸🅽🆂🅴🆁🆃
-█░░░░░█─█ ☕☕☕
-▀▄▄▄▄▄▀▀  🅸🅽🅸🆃🧠
+█▀▀▀▀▀█▄  🅸🅽🆂🅴🆁🆃 🅸🅽🅸🆃
+█░░░░░█─█ ☕☕☕  🧠🧠
+▀▄▄▄▄▄▀▀
 
 "@
 
 $Beer = @"
-█▄▀▄▀▄█     🅸🅽🆂🅴🆁🆃
-█░▀░▀░█▄    🍺🍺🍺
+█▄▀▄▀▄█     🅸🅽🆂🅴🆁🆃 🆄🅽🆆🅸🅽🅳
+█░▀░▀░█▄    🍺🍺🍺 🧠🧠🧠
 █░▀░░░█─█
-█░░░▀░█▄▀   🆄🅽🆆🅸🅽🅳
-▀▀▀▀▀▀▀     🧠🧠🧠
+█░░░▀░█▄▀
+▀▀▀▀▀▀▀
 
 "@
 $Date = Get-Date
 
 switch ($Date.DayOfWeek) {
-    "Friday" {
-        if ($Date.TimeOfDay.hours -lt 17) {
-            Write-Host $Coffee -ForegroundColor Cyan
+    ("Friday" -or "Saturday" -or "Sunday") {
+        if ($Date.TimeOfDay.hours -gt 17) {
+            Write-Host $Beer -ForegroundColor Cyan
         }
+    }
 
-    }
-    "Saturday" {
-        Write-Host $Coffee -ForegroundColor Cyan
-    }
-    "Sunday" {
-        Write-Host $Coffee -ForegroundColor Cyan
-    }
     Default {
-        Write-Host $Beer  -ForegroundColor Cyan
+        Write-Host $Coffee  -ForegroundColor Cyan
     }
 }
 
+# SHELL: ######################################################################
+# StarShip: -------------------------------------------------------------------
+if ($Env:STARSHIP_SHELL) {
+    Invoke-Expression (&starship init powershell)
+}
 
-Invoke-Expression (&starship init powershell)
-
+# MINICONDA: ------------------------------------------------------------------
 #region conda initialize
-# !! Contents within this block are managed by 'conda init' !!
-(& "C:\Users\$env:USERNAME\scoop\apps\miniconda3\current\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+if (Test-Path -Path "C:\Users\$env:USERNAME\scoop\apps\miniconda3\current\Scripts\conda.exe") {
+    # !! Contents within this block are managed by 'conda init' !!
+    (& "C:\Users\$env:USERNAME\scoop\apps\miniconda3\current\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+}
+
 #endregion
 
