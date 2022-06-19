@@ -1,5 +1,5 @@
 # Services: ###################################################################
-$script:Service = @(
+$Service = @(
     "diagnosticshub.standardcollector.service" # Diagnostics Hub Service
     "DiagTrack"                                # Diagnostics Tracking Service
     "dmwappushservice"                         # WAP Push Message Routing Service
@@ -11,7 +11,7 @@ $script:Service = @(
 )
 
 # Remove Unwanted UWP Applications: ###########################################
-$script:UWPackage = @(
+$UWPackage = @(
     "Microsoft.BingFinance",
     "Microsoft.3DBuilder",
     "Microsoft.BingNews",

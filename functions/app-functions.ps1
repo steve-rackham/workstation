@@ -19,8 +19,8 @@ function WSSetupScoop {
             Invoke-WebRequest get.scoop.sh | Invoke-Expression
         }
         Default {
-            Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ Scoop ]", "Error Installing Scoop...")
-            Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ Scoop ]", "Exit.")
+            Write-Output  ("{0}{1} {2}" -f $([Char]9), "[ Scoop ]", "Error Installing Scoop...")
+            Write-Output  ("{0}{1} {2}" -f $([Char]9), "[ Scoop ]", "Exit.")
             Return
         }
     }
@@ -47,7 +47,7 @@ function WSSetupScoop {
             scoop bucket add $item
 
         } catch {
-            Write-Warning ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Error Installing.")
+            Write-Output ("{0}{1} {2}" -f $([Char]9), "[ $item ]", "Error Installing.")
 
         }
     }

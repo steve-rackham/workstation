@@ -13,7 +13,7 @@
 #>
 
 
-function Invoke-WSSetup {
+function WSSetup {
     [CmdletBinding()]
     param (
         [Parameter()]
@@ -71,11 +71,9 @@ function Invoke-WSSetup {
 
             }
             Admin {
-                # Definitions: ########################################################
-                # Load Helper Functions and Files: ------------------------------------
-                Write-Output "[ DEFINITIONS ]"
-                Write-Output "Loading Helper Functions and Definitions..."
-
+                WSSetupCheckFiles -Files $AdminFiles
+                Write-Output "[ ADMIN CONFIGURATION ]"
+                WSSetupAdmin -Setup SetExplorerOptions, SetServiceOptions, RemoveAppPackages
 
                 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
                     $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments

@@ -1,5 +1,5 @@
 
-
+#Requires -RunAsAdministrator
 function WSSetupAdmin {
     [CmdletBinding()]
     param (
@@ -32,7 +32,7 @@ function WSSetupAdmin {
         }
     }
 }
-
+#Requires -RunAsAdministrator
 function WSSetupExplorerOptions {
     param (
 
@@ -66,6 +66,7 @@ function WSSetupExplorerOptions {
     }
 }
 
+#Requires -RunAsAdministrator
 function WSSetupAppPackage {
     [CmdletBinding()]
     param (
@@ -78,25 +79,31 @@ function WSSetupAppPackage {
     begin {
         $OffSet = 0 - ($Name | Measure-Object -Maximum -Property Length).Maximum
         try {
-            Write-Information  "[ APP PACKAGES ]"
-            Write-Information  "Remove Unnecessary App Packages..."
+            Write-Output  "[ APP PACKAGES ]"
+            Write-Output   "Remove Unnecessary App Packages..."
 
         } catch {
-            Write-Warning ("{0}{1}" -f $([Char]9), "Error Processing AppPackage Options")
-            Write-Error ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
+            Write-Output  ("{0}{1}" -f $([Char]9), "Error Processing AppPackage Options")
+            Write-Output  ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
         }
     }
 
     process {
         foreach ($item in $Name) {
             try {
-                Write-Output ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Removing AppPackage...")
-                [void](Get-AppxPackage $item -AllUsers -ErrorAction Stop | Remove-AppxPackage -ErrorAction Stop)
-                [void](Get-AppxProvisionedPackage -Online -ErrorAction Stop  | Where-Object DisplayName -Like $item -ErrorAction Stop | Remove-AppxProvisionedPackage -Online -ErrorAction Stop)
+                if ($Result = Get-AppxPackage $item -AllUsers) {
+                    Write-Output ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Removing AppPackage...")
+                    Remove-AppxPackage -Package $Result -ErrorAction Stop
+                }
+                if ($Result = Get-AppxProvisionedPackage -Online | Where-Object DisplayName -Like $item) {
+                    Write-Output ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Removing Online AppPackage...")
+                    Remove-AppxProvisionedPackage -Online -Package $Result -ErrorAction Stop
+                }
+
 
             } catch {
-                Write-Warning ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Error Removing AppPackage...")
-                Write-Error ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", $Error[0].ErrorRecord.Message)
+                Write-Output  ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Error Removing AppPackage...")
+                Write-Output  ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", $Error[0].Exception.Message)
             }
         } # END foreach ($item in $UWP)
     }
@@ -116,16 +123,16 @@ function WSSetupService {
     Begin {
         $OffSet = 0 - ($Name | Measure-Object -Maximum -Property Length).Maximum
         try {
-            Write-Information "[ SERVICES ]"
-            Write-Information "Set Service Options..."
+            Write-Output  "[ SERVICES ]"
+            Write-Output  "Set Service Options..."
             Write-Output ("{0}{1}" -f $([Char]9), "Enable ssh-agent service")
             Set-Service ssh-agent -StartupType Manual
 
-            Write-Information "Disable Unnecessary Services..."
+            Write-Output  "Disable Unnecessary Services..."
 
         } catch {
-            Write-Warning ("{0}{1}" -f $([Char]9), "Error Service Options")
-            Write-Error ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
+            Write-Output  ("{0}{1}" -f $([Char]9), "Error Service Options")
+            Write-Output ("{0}{1}" -f $([Char]9), $Error[0].ErrorDetails.Message)
         }
 
     }
@@ -137,8 +144,8 @@ function WSSetupService {
                 Get-Service -Name $item -ErrorAction Stop | Set-Service -Status Stopped -StartupType Disabled -ErrorAction Stop
 
             } catch {
-                Write-Warning ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Error Disabling Service...")
-                Write-Error ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", $Error[0].ErrorRecord.Message)
+                Write-Output  ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", "Error Disabling Service...")
+                Write-Output  ("{0}{1, $Offset} {2}" -f $([Char]9), "[ $item ]", $Error[0].ErrorRecord.Message)
             }
         }
     }

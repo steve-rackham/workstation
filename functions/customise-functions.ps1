@@ -90,19 +90,19 @@ function WSSetupPowerShellModule {
             switch ($Result) {
                 (([version]$Result.Version -lt [version]$Latest.Version) -and ($Module.Version -eq "Latest")) {
                     Write-Output ("{0}{1} {2}" -f $([Char]9), "[ $($item.ModuleName) ]", "Updating to [ $($Latest.Version)]...")
-                    # Update-Module $item -Confirm:$false -Force
+                    Update-Module $item -Confirm:$false -Force
 
                 }
 
                 (([version]$Result.Version -ne [version]$Latest.Version) -and ($Module.Version -ne "Latest")) {
                     Write-Output ("{0}{1} {2}" -f $([Char]9), "[ $($item.ModuleName) ]", "Current Version [ $($Result.Version) ]. Installing [ $($Module.Version)]...")
-                    # Update-Module $item -Confirm:$false -Force
+                    Update-Module $item -Confirm:$false -Force
 
                 }
 
                 Default {
                     Write-Output ("{0}{1} {2}" -f $([Char]9), "[ $($item.ModuleName) ]", "Installing [ $($Latest.Version)]...")
-                    # Install-Module $item.ModuleName -Scope CurrentUser -Confirm:$false -ErrorAction Stop
+                    Install-Module $item.ModuleName -Scope CurrentUser -Confirm:$false -ErrorAction Stop
 
                 }
             }
@@ -121,8 +121,8 @@ function WSSetupVSCodeExtensions {
 
     begin {
         $OffSet = 0 - ($Name | Measure-Object -Maximum -Property Length).Maximum
-        Write-Output "[ VSCode Extentions ]"
-        Write-Output  "Installing VSCode Extentions..."
+        Write-Output "[ VSCode Extensions ]"
+        Write-Output  "Installing VSCode Extensions..."
 
     }
 
