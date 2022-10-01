@@ -47,8 +47,11 @@ deleted = "[ﮁ ](red)"
 format = "[ $workspace]($style) "
 style = "bold fg:purple"
 
-
-
+[username]
+style_root = "fg:bold yellow bg:8"
+format = "[$user ]($style)"
+disabled = false
+# show_always = true
 
 # Qualm-Nursing-Cassette4"
 

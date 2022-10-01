@@ -77,9 +77,10 @@ switch ($Date.DayOfWeek) {
 
 # SHELL: ######################################################################
 # StarShip: -------------------------------------------------------------------
-if ($Env:STARSHIP_SHELL) {
-    Invoke-Expression (&starship init powershell)
-}
+
+Invoke-Expression (&starship init powershell)
+
+Import-Module posh-git
 
 # MINICONDA: ------------------------------------------------------------------
 #region conda initialize
