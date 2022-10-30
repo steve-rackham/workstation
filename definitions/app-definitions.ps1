@@ -32,6 +32,7 @@ $script:Application = @(
     "kitty"
     "mame"
     "miniconda3"
+    "oh-my-posh"
     "pester"
     "plantuml"
     "poshgit"
