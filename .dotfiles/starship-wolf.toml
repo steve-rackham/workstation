@@ -1,0 +1,53 @@
+add_newline = true
+continuation_prompt = "▶▶"
+scan_timeout = 50
+
+format = """\
+[╭──](8)🐺 $time[](8)$all[╰─](8)\
+$character"""
+
+[character]
+success_symbol = "[▶](bold cyan)"
+error_symbol = "[▶](bold red)"
+
+[time]
+time_format = "%R"
+format = "[$time]($style) "
+style = "dimmed white"
+disabled = false
+
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+home_symbol = "~"
+format = "[ $path]($style)[](bg:black fg:8) "
+style = "fg:bold cyan bg:8"
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "cyan"
+
+[git_status]
+format = '[$all_status]($style) '
+style = "cyan"
+conflicted = "[ﲅ ](red)"
+up_to_date = "[ ](green)"
+untracked = "[ ](yellow)"
+ahead = "[ ](green)"
+diverged = "[  ](yellow) "
+behind = "[ ](yellow)"
+stashed = "[ ](green)"
+modified = "[ ](yellow)"
+staged = '[ ](green)'
+deleted = "[ﮁ ](red)"
+
+[terraform]
+format = "[ $workspace]($style) "
+style = "bold fg:purple"
+
+[username]
+style_root = "fg:20 bg:8"
+format = "[$user ]($style)"
+disabled = false
+# show_always = true
