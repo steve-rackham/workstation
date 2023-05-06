@@ -21,6 +21,9 @@ systemctl start sshd
 # GNOME: ##############################
 sudo dnf install gnome-tweaks -y
 
+# KDE: ################################
+sudo dnf install kvantum
+
 # TERMINAL: ###########################
 curl -fsSL https://starship.rs/install.sh | bash
 echo 'eval "$(starship init zsh)"' >> .zshrc
