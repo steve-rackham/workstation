@@ -29,6 +29,10 @@ curl -fsSL https://starship.rs/install.sh | bash
 echo 'eval "$(starship init zsh)"' >> .zshrc
 
 # GIT: ################################
+ssh-keygen -t ed25519 -C "steve@siliconwolf.net"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
 git config --global user.name "Steve Rackham"
 git config --global user.email "steve@siliconwolf.net"
 
