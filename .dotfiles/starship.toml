@@ -1,58 +1,79 @@
+# Options: 
+command_timeout = 5000
 add_newline = true
 continuation_prompt = "▶▶"
-command_timeout = "1000"
-scan_timeout = "100"
+scan_timeout = 500
 
-format = """\
-[╭──](8)🐺 $time[](8)$all[╰─](8)\
-$character"""
+# Format:
+format = """
+[](#3B4252)\
+$username\
+[](bg:#434C5E fg:#3B4252)\
+$directory\
+[](fg:#434C5E bg:#4C566A)\
+$git_branch\
+$git_status\
+[](fg:#4C566A bg:#86BBD8)\
+[](fg:#86BBD8 bg:#06969A)\
+[](fg:#06969A bg:#33658A)\
+$time\
+[ ](fg:#33658A)\
+$character
+$shell"""
 
 [character]
-success_symbol = "[▶](bold cyan)"
-error_symbol = "[▶](bold red)"
+success_symbol = "" # Override. Only see errors.
+error_symbol = "🤦"
 
-[time]
-time_format = "%R"
-format = "[$time]($style) "
-style = "dimmed white"
-disabled = false
-
-[directory]
-truncation_length = 3
-truncation_symbol = "…/"
-home_symbol = "~"
-format = "[ $path]($style)[](bg:black fg:8) "
-style = "fg:bold cyan bg:8"
-
-[git_branch]
-symbol = " "
-format = "[$symbol$branch]($style) "
-style = "cyan"
-
-[git_status]
-format = '[$all_status]($style) '
-style = "cyan"
-conflicted = "[ﲅ ](red)"
-up_to_date = "[ ](green)"
-untracked = "[ ](yellow)"
-ahead = "[ ](green)"
-diverged = "[  ](yellow) "
-behind = "[ ](yellow)"
-stashed = "[ ](green)"
-modified = "[ ](yellow)"
-staged = '[ ](green)'
-deleted = "[ﮁ ](red)"
-
-[terraform]
-format = "[ $workspace]($style) "
-style = "bold fg:purple"
+[shell]
+disabled = false # Disabled by default. Explicity enabled.
+fish_indicator = '󰈺'
+powershell_indicator = ''
+bash_indicator =""
+zsh_indicator ="󱆃"
+cmd_indicator = ""
+unknown_indicator = ""
+format = "[╰─](bold fg:#3B4252)[$indicator]($style) "
+style = "fg:#86BBD8"
 
 [username]
-style_root = "fg:bold yellow bg:8"
-format = "[$user ]($style)"
+show_always = true
+style_user = "bg:#3B4252"
+style_root = "bg:#3B4252"
+format = '[$user ]($style)'
+
+[directory]
+style = "bg:#434C5E"
+format = "[ $path ]($style)"
+truncation_length = 3
+
+# Use shortcut icons for known directories. 
+[directory.substitutions]
+"Documents" = " 󰟒 "
+"DevOps" = "  "
+
+[git_branch]
+symbol = ""
+style = "bg:#4C566A"
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = "bg:#4C566A"
+format = '[$all_status$ahead_behind ]($style)'
+conflicted = ''
+ahead = ' '
+behind = ' '
+diverged = '󰆗 ' 
+up_to_date = ' '
+untracked = ' '
+stashed = '󰰢 '
+modified = '󰰐 '
+staged = '[\($count\) ](bg:#4C566A)'
+renamed = '󰰟 '
+deleted = '󰚃 '
+
+[time]
 disabled = false
-# show_always = true
-
-# Qualm-Nursing-Cassette4"
-
-
+time_format = "%R" # Hour:Minute Format
+style = "bg:#33658A"
+format = '[ $time ]($style)'
